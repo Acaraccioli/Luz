@@ -23,7 +23,7 @@ nav {
 
 .mobile-menu {
   i {
-    color: white;
+    color: blue;
   }
   ul {
     padding: 0px;
@@ -33,7 +33,7 @@ nav {
     padding: 10px 0px 10px 25px !important;
   }
   a:hover {
-    background: white !important;
+    background: blue !important;
     color: black !important;
     i {
       color: black;
@@ -42,12 +42,12 @@ nav {
 }
 
 .icon-bar {
-  background-color: white !important;
+  background-color: blue !important;
 }
 
 .active a {
   background: $navbarColor !important;
-  border-bottom: solid 5px white;
+  border-bottom: solid 5px blue;
 }
 
 .dropdown-toggle, .dropdown-menu {
@@ -57,13 +57,13 @@ nav {
 
 .dropdown-menu a:hover {
   color: black !important;
-  background: white !important;
+  background: blue !important;
 }
 .navbar-default, .navbar-toggle:focus, .collapsed, button.navbar-toggle {
   background: $navbarColor !important;
   border: none;
   a {
-    color: white !important;
+    color: blue !important;
   }
 }
 

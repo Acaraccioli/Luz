@@ -1,13 +1,22 @@
+
 <%= bootstrap_form_for([@location, @location.recordings.build]) do |f| %>
 	<div class = "row">
-		<div class = "col-md-3">
+		<div class = "col-md-0">
+		
 			<div class = "field">
-				<h1>TEMP</h1>
+				<h2> Temperature</h2>
 				<%= f.text_field :temp, class: "form-control" %>
-				<h1>STATUS</h1>
+			</div>
+		</div>
+
+		<div class = "col-md-9">
+			<div class = "field">
+				<h2> Status</h2>
 				<%= f.text_area :status, class: "form-control" %>
-						<%= f.submit "Save recording", class: "btn btn-success" %>
 			</div>
 		</div>
 	</div>
+	<span class= "pull-middle">
+		<%= f.submit "Save", class: "btn btn-primary" %>
+	</span>
 <% end %>

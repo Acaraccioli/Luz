@@ -1,10 +1,12 @@
 <% @locations.each do |location| %> 
 <strong></strong>
-	<h4>Location: <%= location.name%></h4> <%= link_to "Edit", location %> | <%= link_to "Delete", location, method: :delete, data: {confirm: 'Are you sure?'} %>
-
+	<h4 class="text-center"> <%= location.name%></h4 > 
+	<div class= "row text-center">
+	<%= link_to "Edit", location %> | <%= link_to "Delete", location, method: :delete, data: {confirm: 'Are you sure?'} %>
+	</div>
 	<% location.recordings.each do |recording|%> 
 	<strong></strong>
-	<div class= "row">
+	<div class= "row text-center">
 	<div class="col-md-offset-1">
 	<p> Temp: <%= recording.temp%></p>
 	<p> Status: <%= recording.status%></p>
