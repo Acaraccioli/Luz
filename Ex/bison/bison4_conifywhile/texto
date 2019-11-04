@@ -1,0 +1,8 @@
+a<-10
+Escriba (9+8+15)
+b<-7
+Escriba (9+8+16)
+Si a == 10 Entonces
+Escriba (2+2)
+Sino
+Escriba (2+1)

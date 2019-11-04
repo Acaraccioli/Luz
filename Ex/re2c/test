@@ -1,0 +1,16 @@
+//hola
+z<-13+1
+Si 1-1 entonces
+    Escriba z
+sino
+    Escriba 4
+fin si
+/*buenas 
+
+
+
+****/
+Mientras 1 
+haga
+Escriba z+1
+fin mientras

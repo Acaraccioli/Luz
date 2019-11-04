@@ -1,0 +1,404 @@
+Terminals unused in grammar
+
+   TK_ERROR
+   TK_EOL
+   TK_IF
+
+
+Grammar
+
+    0 $accept: input $end
+
+    1 input: stmt_list opt_semi
+
+    2 opt_semi: TK_SEMICOLON
+    3         | %empty
+
+    4 stmt_list: stmt_list TK_SEMICOLON stmt
+    5          | stmt
+
+    6 stmt: TK_IDENT TK_ASSIGN expr
+    7     | TK_PRINT expr
+
+    8 expr: expr TK_SUMA term
+    9     | expr TK_RESTA term
+   10     | term
+
+   11 term: term TK_MULTI factor
+   12     | term TK_DIV factor
+   13     | factor
+
+   14 factor: TK_NUMBER
+   15       | TK_IDENT
+   16       | TK_LEFTPAR expr TK_RIGHTPAR
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+TK_NUMBER (258) 14
+TK_ERROR (259)
+TK_EOL (260)
+TK_IDENT (261) 6 15
+TK_SUMA (262) 8
+TK_RESTA (263) 9
+TK_MULTI (264) 11
+TK_DIV (265) 12
+TK_LEFTPAR (266) 16
+TK_RIGHTPAR (267) 16
+TK_PRINT (268) 7
+TK_SEMICOLON (269) 2 4
+TK_ASSIGN (270) 6
+TK_IF (271)
+
+
+Nonterminals, with rules where they appear
+
+$accept (17)
+    on left: 0
+input (18)
+    on left: 1, on right: 0
+opt_semi (19)
+    on left: 2 3, on right: 1
+stmt_list (20)
+    on left: 4 5, on right: 1 4
+stmt (21)
+    on left: 6 7, on right: 4 5
+expr (22)
+    on left: 8 9 10, on right: 6 7 8 9 16
+term (23)
+    on left: 11 12 13, on right: 8 9 10 11 12
+factor (24)
+    on left: 14 15 16, on right: 11 12 13
+
+
+State 0
+
+    0 $accept: . input $end
+    1 input: . stmt_list opt_semi
+    4 stmt_list: . stmt_list TK_SEMICOLON stmt
+    5          | . stmt
+    6 stmt: . TK_IDENT TK_ASSIGN expr
+    7     | . TK_PRINT expr
+
+    TK_IDENT  shift, and go to state 1
+    TK_PRINT  shift, and go to state 2
+
+    input      go to state 3
+    stmt_list  go to state 4
+    stmt       go to state 5
+
+
+State 1
+
+    6 stmt: TK_IDENT . TK_ASSIGN expr
+
+    TK_ASSIGN  shift, and go to state 6
+
+
+State 2
+
+    7 stmt: TK_PRINT . expr
+    8 expr: . expr TK_SUMA term
+    9     | . expr TK_RESTA term
+   10     | . term
+   11 term: . term TK_MULTI factor
+   12     | . term TK_DIV factor
+   13     | . factor
+   14 factor: . TK_NUMBER
+   15       | . TK_IDENT
+   16       | . TK_LEFTPAR expr TK_RIGHTPAR
+
+    TK_NUMBER   shift, and go to state 7
+    TK_IDENT    shift, and go to state 8
+    TK_LEFTPAR  shift, and go to state 9
+
+    expr    go to state 10
+    term    go to state 11
+    factor  go to state 12
+
+
+State 3
+
+    0 $accept: input . $end
+
+    $end  shift, and go to state 13
+
+
+State 4
+
+    1 input: stmt_list . opt_semi
+    2 opt_semi: . TK_SEMICOLON
+    3         | . %empty  [$end]
+    4 stmt_list: stmt_list . TK_SEMICOLON stmt
+
+    TK_SEMICOLON  shift, and go to state 14
+
+    $default  reduce using rule 3 (opt_semi)
+
+    opt_semi  go to state 15
+
+
+State 5
+
+    5 stmt_list: stmt .
+
+    $default  reduce using rule 5 (stmt_list)
+
+
+State 6
+
+    6 stmt: TK_IDENT TK_ASSIGN . expr
+    8 expr: . expr TK_SUMA term
+    9     | . expr TK_RESTA term
+   10     | . term
+   11 term: . term TK_MULTI factor
+   12     | . term TK_DIV factor
+   13     | . factor
+   14 factor: . TK_NUMBER
+   15       | . TK_IDENT
+   16       | . TK_LEFTPAR expr TK_RIGHTPAR
+
+    TK_NUMBER   shift, and go to state 7
+    TK_IDENT    shift, and go to state 8
+    TK_LEFTPAR  shift, and go to state 9
+
+    expr    go to state 16
+    term    go to state 11
+    factor  go to state 12
+
+
+State 7
+
+   14 factor: TK_NUMBER .
+
+    $default  reduce using rule 14 (factor)
+
+
+State 8
+
+   15 factor: TK_IDENT .
+
+    $default  reduce using rule 15 (factor)
+
+
+State 9
+
+    8 expr: . expr TK_SUMA term
+    9     | . expr TK_RESTA term
+   10     | . term
+   11 term: . term TK_MULTI factor
+   12     | . term TK_DIV factor
+   13     | . factor
+   14 factor: . TK_NUMBER
+   15       | . TK_IDENT
+   16       | . TK_LEFTPAR expr TK_RIGHTPAR
+   16       | TK_LEFTPAR . expr TK_RIGHTPAR
+
+    TK_NUMBER   shift, and go to state 7
+    TK_IDENT    shift, and go to state 8
+    TK_LEFTPAR  shift, and go to state 9
+
+    expr    go to state 17
+    term    go to state 11
+    factor  go to state 12
+
+
+State 10
+
+    7 stmt: TK_PRINT expr .  [$end, TK_SEMICOLON]
+    8 expr: expr . TK_SUMA term
+    9     | expr . TK_RESTA term
+
+    TK_SUMA   shift, and go to state 18
+    TK_RESTA  shift, and go to state 19
+
+    $default  reduce using rule 7 (stmt)
+
+
+State 11
+
+   10 expr: term .  [$end, TK_SUMA, TK_RESTA, TK_RIGHTPAR, TK_SEMICOLON]
+   11 term: term . TK_MULTI factor
+   12     | term . TK_DIV factor
+
+    TK_MULTI  shift, and go to state 20
+    TK_DIV    shift, and go to state 21
+
+    $default  reduce using rule 10 (expr)
+
+
+State 12
+
+   13 term: factor .
+
+    $default  reduce using rule 13 (term)
+
+
+State 13
+
+    0 $accept: input $end .
+
+    $default  accept
+
+
+State 14
+
+    2 opt_semi: TK_SEMICOLON .  [$end]
+    4 stmt_list: stmt_list TK_SEMICOLON . stmt
+    6 stmt: . TK_IDENT TK_ASSIGN expr
+    7     | . TK_PRINT expr
+
+    TK_IDENT  shift, and go to state 1
+    TK_PRINT  shift, and go to state 2
+
+    $default  reduce using rule 2 (opt_semi)
+
+    stmt  go to state 22
+
+
+State 15
+
+    1 input: stmt_list opt_semi .
+
+    $default  reduce using rule 1 (input)
+
+
+State 16
+
+    6 stmt: TK_IDENT TK_ASSIGN expr .  [$end, TK_SEMICOLON]
+    8 expr: expr . TK_SUMA term
+    9     | expr . TK_RESTA term
+
+    TK_SUMA   shift, and go to state 18
+    TK_RESTA  shift, and go to state 19
+
+    $default  reduce using rule 6 (stmt)
+
+
+State 17
+
+    8 expr: expr . TK_SUMA term
+    9     | expr . TK_RESTA term
+   16 factor: TK_LEFTPAR expr . TK_RIGHTPAR
+
+    TK_SUMA      shift, and go to state 18
+    TK_RESTA     shift, and go to state 19
+    TK_RIGHTPAR  shift, and go to state 23
+
+
+State 18
+
+    8 expr: expr TK_SUMA . term
+   11 term: . term TK_MULTI factor
+   12     | . term TK_DIV factor
+   13     | . factor
+   14 factor: . TK_NUMBER
+   15       | . TK_IDENT
+   16       | . TK_LEFTPAR expr TK_RIGHTPAR
+
+    TK_NUMBER   shift, and go to state 7
+    TK_IDENT    shift, and go to state 8
+    TK_LEFTPAR  shift, and go to state 9
+
+    term    go to state 24
+    factor  go to state 12
+
+
+State 19
+
+    9 expr: expr TK_RESTA . term
+   11 term: . term TK_MULTI factor
+   12     | . term TK_DIV factor
+   13     | . factor
+   14 factor: . TK_NUMBER
+   15       | . TK_IDENT
+   16       | . TK_LEFTPAR expr TK_RIGHTPAR
+
+    TK_NUMBER   shift, and go to state 7
+    TK_IDENT    shift, and go to state 8
+    TK_LEFTPAR  shift, and go to state 9
+
+    term    go to state 25
+    factor  go to state 12
+
+
+State 20
+
+   11 term: term TK_MULTI . factor
+   14 factor: . TK_NUMBER
+   15       | . TK_IDENT
+   16       | . TK_LEFTPAR expr TK_RIGHTPAR
+
+    TK_NUMBER   shift, and go to state 7
+    TK_IDENT    shift, and go to state 8
+    TK_LEFTPAR  shift, and go to state 9
+
+    factor  go to state 26
+
+
+State 21
+
+   12 term: term TK_DIV . factor
+   14 factor: . TK_NUMBER
+   15       | . TK_IDENT
+   16       | . TK_LEFTPAR expr TK_RIGHTPAR
+
+    TK_NUMBER   shift, and go to state 7
+    TK_IDENT    shift, and go to state 8
+    TK_LEFTPAR  shift, and go to state 9
+
+    factor  go to state 27
+
+
+State 22
+
+    4 stmt_list: stmt_list TK_SEMICOLON stmt .
+
+    $default  reduce using rule 4 (stmt_list)
+
+
+State 23
+
+   16 factor: TK_LEFTPAR expr TK_RIGHTPAR .
+
+    $default  reduce using rule 16 (factor)
+
+
+State 24
+
+    8 expr: expr TK_SUMA term .  [$end, TK_SUMA, TK_RESTA, TK_RIGHTPAR, TK_SEMICOLON]
+   11 term: term . TK_MULTI factor
+   12     | term . TK_DIV factor
+
+    TK_MULTI  shift, and go to state 20
+    TK_DIV    shift, and go to state 21
+
+    $default  reduce using rule 8 (expr)
+
+
+State 25
+
+    9 expr: expr TK_RESTA term .  [$end, TK_SUMA, TK_RESTA, TK_RIGHTPAR, TK_SEMICOLON]
+   11 term: term . TK_MULTI factor
+   12     | term . TK_DIV factor
+
+    TK_MULTI  shift, and go to state 20
+    TK_DIV    shift, and go to state 21
+
+    $default  reduce using rule 9 (expr)
+
+
+State 26
+
+   11 term: term TK_MULTI factor .
+
+    $default  reduce using rule 11 (term)
+
+
+State 27
+
+   12 term: term TK_DIV factor .
+
+    $default  reduce using rule 12 (term)

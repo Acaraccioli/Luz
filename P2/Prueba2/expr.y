@@ -21,16 +21,20 @@ void yyerror(const char* msg){
 
 %token TK_IDENT
 %token OP_ASSIGN
-%token TK_OPEN_PAR
-%token TK_CLOSE_PAR
+%token openpar
+%token closepar
+%token openbracket
+%token closebracket
+%token comma
 %token TK_NUMBER
-%token TK_EOL
-%token TK_EOF
-%token KW_PRINT
 %token OP_ADD
 %token OP_SUB
 %token OP_MUL
 %token OP_DIV
+%token TK_EOL
+%token TK_EOF
+%token KW_PRINT
+
 
 %%
 
