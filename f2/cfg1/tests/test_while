@@ -1,0 +1,6 @@
+z<-11*3
+Escriba z
+Mientras z < 34
+haga
+    z<-z+1
+fin mientras

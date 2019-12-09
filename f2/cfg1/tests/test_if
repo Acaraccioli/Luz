@@ -1,0 +1,5 @@
+Si 1 == 1 entonces
+    Escriba 10
+sino
+    Escriba 4
+fin si

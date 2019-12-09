@@ -1,0 +1,386 @@
+%option lang = "C++"
+%option reentrant
+
+%decls %{
+    //header
+    #include <cstddef> 
+    #include <string>
+    #include <cmath>
+    #include <unordered_map>
+    #include <vector>
+    #include <utility>
+    #include "expr_CFG.h"
+    using string_t = std::string;
+    using umap_t = std::unordered_map<std::string, int>;
+    using pair_t = std::pair<Stmt *, Stmt *>;
+%}
+
+%{
+    #include "expr_ast.h"
+    #include <iostream>
+    #include <stdio.h>
+    void yyerror(const char *msg);
+    int temp = 0;
+    std::string nuevaVariableTemporal() {
+        std::string nombre = "t" + std::to_string(temp);
+        temp++;
+        return nombre;
+    }
+
+%}
+
+%enum type_code = 
+{
+    int_type,
+    float_type,
+    string_type
+}
+
+%node ASTNode %abstract %typedef = {
+    %nocreate int value = {0};
+    %nocreate Operand *left_value = {nullptr};
+}
+
+%node expression ASTNode %abstract = 
+{
+    %nocreate type_code type = {int_type};
+}
+
+%node binary expression %abstract = 
+{
+    ASTNode *expr1;
+    ASTNode *expr2;
+}
+
+%node unary expression %abstract = 
+{
+    ASTNode *expr;
+}
+
+%node intnum expression = 
+{
+    int num;
+}
+
+%node id expression =
+{
+    string_t id_val;
+}
+
+%node plus binary
+%node minus binary
+%node multiply binary
+%node divide binary
+%node andExpr binary
+%node orExpr binary
+%node notExpr unary
+
+%node statement ASTNode %abstract
+
+%node ifStmt statement = {
+    ASTNode * condicion;
+    ASTNode * verdadero;
+    ASTNode * falso;
+}
+
+%node whileStmt statement = {
+    ASTNode * condicion;
+    ASTNode * action;
+}
+
+%node assign statement = {
+    string_t id;
+    ASTNode * val;
+}
+
+%node blockStmt statement = {
+    ASTNode * first;
+    ASTNode * next;
+}
+
+%node print statement = {
+    ASTNode * expr;
+}
+
+%node nop statement
+
+%operation %virtual void eval(ASTNode *this, umap_t & idents);
+%operation %virtual pair_t AST2CFG(ASTNode *this);
+%operation %virtual ExprClass* ShortCircuit(ASTNode *this, Stmt *tr, Stmt *fa);
+//%operation %virtual void printCFG(ASTNode *this); 
+
+ShortCircuit(expression) {
+    pair_t tempPair = AST2CFG();
+
+    IntOperand * cero = new IntOperand(0);
+
+    ExprClass * exprCond = new UnaryExpr(left_value);
+    IfStmt * stmt = new IfStmt(exprCond, tr, fa);
+
+    tempPair.second->setNext(stmt);
+
+    return tempPair.first;
+}
+
+ShortCircuit(andExpr) {
+    ExprClass* b2 = ((expression*)expr2)->ShortCircuit(tr, fa);
+    ExprClass* b1 = ((expression*)expr1)->ShortCircuit(b2, fa);
+
+    return b1;
+}
+
+ShortCircuit(orExpr) {
+    ExprClass* b2 = ((expression*)expr2)->ShortCircuit(tr, fa);
+    ExprClass* b1 = ((expression*)expr1)->ShortCircuit(tr, b2);
+
+    return b1;
+}
+
+ShortCircuit(notExpr) {
+    ExprClass* b1 = ((expression*)expr)->ShortCircuit(fa, tr);
+    return b1;
+}
+
+ShortCircuit(ifStmt){
+
+}
+ShortCircuit(whileStmt){
+
+}
+ShortCircuit(assign){
+
+}
+ShortCircuit(blockStmt){
+
+}
+ShortCircuit(print){
+
+}
+ShortCircuit(nop){
+
+}
+
+AST2CFG(intnum) { 
+    left_value = new IntOperand(num);
+
+    NopStmt * nop = new NopStmt();
+    return pair_t(nop,nop);
+}
+
+AST2CFG(id) { 
+    left_value = new IdOperand(id_val);
+
+    NopStmt * nop = new NopStmt();
+    return pair_t(nop,nop);
+}
+
+AST2CFG(plus) {
+    pair_t op1 = expr1->AST2CFG();
+    pair_t op2 = expr2->AST2CFG();
+
+    AddExpr * expr = new AddExpr(expr1->left_value, expr2->left_value); 
+    //std::string tempName = nuevaVariableTemporal();
+
+    IdOperand * ide = new IdOperand(nuevaVariableTemporal());
+
+    AssignStmt * stmt = new AssignStmt(ide,expr);
+
+    op1.second->setNext(op2.first);
+    op2.second->setNext(stmt);
+
+    std::cout << "plus CFG: " << stmt->toString() << std::endl;
+    return pair_t(op1.first, stmt);
+
+}
+
+AST2CFG(minus) {
+    pair_t op1 = expr1->AST2CFG();
+    pair_t op2 = expr2->AST2CFG();
+
+    SubExpr *expr = new SubExpr(expr1->left_value, expr2->left_value);
+   // std::string tempName = nuevaVariableTemporal();
+
+    IdOperand * ide = new IdOperand("t1");
+
+    AssignStmt * stmt = new AssignStmt(ide,expr);
+
+    op1.second->setNext(op2.first);
+    op2.second->setNext(stmt);
+
+    std::cout << "sub CFG: " << stmt->toString() << std::endl;
+
+    std::cout << "op1first: " << op1.first->toString() << " stmt: " << stmt->toString() << std::endl;
+    return pair_t(op1.first, stmt); 
+}
+
+AST2CFG(multiply) {
+  /*  pair_t op1 = expr1->AST2CFG();
+    pair_t op2 = expr2->AST2CFG();
+
+    CFGNode *expr = new MulExpr(op1.first, op2.first); 
+
+    std::cout << "multi CFG: " << expr->toString() << std::endl;
+
+    return pair_t(nuevaVariableTemporal(), expression); */
+}
+
+AST2CFG(divide) {
+   /* pair_t op1 = expr1->AST2CFG();
+    pair_t op2 = expr2->AST2CFG();
+
+    CFGNode *expr = new DivExpr(op1.first, op2.first); 
+
+    std::cout << "divide CFG: " << expr->toString() << std::endl;
+
+    return pair_t(nuevaVariableTemporal(), expression); */
+}
+
+AST2CFG(andExpr) { 
+    
+}
+
+
+AST2CFG(orExpr) { 
+    
+}
+
+AST2CFG(notExpr) { 
+}
+
+AST2CFG(assign) { 
+ 
+    pair_t op = val->AST2CFG();
+    
+    IdOperand * id_val = new IdOperand(id);
+
+    AssignStmt * stmt = new AssignStmt(id_val,val->left_value);
+
+    std::cout << "assign CFG: " << stmt->toString() << std::endl;
+    
+ 
+    return pair_t(op.first, stmt);
+}
+
+
+
+AST2CFG(ifStmt) { 
+    pair_t tr = verdadero->AST2CFG();
+    pair_t fl = falso->AST2CFG();
+    NopStmt * nop = new NopStmt();
+
+    tr.second->setNext(nop);
+    fl.second->setNext(nop);
+
+    //SHORT CIRCUIT
+}
+
+AST2CFG(whileStmt) { 
+    
+}
+
+AST2CFG(print) { 
+    
+}
+
+AST2CFG(nop) { 
+    
+}
+
+AST2CFG(blockStmt) { 
+    pair_t one = first->AST2CFG();
+    pair_t two = next->AST2CFG();
+
+    std::cout << "pair_t one: " << one.first << std::endl;
+    one.second->setNext(two.first);
+
+    return pair_t(one.first,two.second);
+}
+
+eval(blockStmt){
+    first->eval(idents);
+    next->eval(idents);
+}
+
+
+eval(nop) {
+
+}
+
+eval(print){
+    expr->eval(idents);
+    std::cout << expr->value << std::endl;
+}
+
+eval(ifStmt){
+    condicion->eval(idents);
+    if(condicion->value){
+        verdadero->eval(idents);
+    } else {
+        falso->eval(idents);
+    }
+}
+
+eval(whileStmt){
+    condicion->eval(idents);
+    while(condicion->value){
+        action->eval(idents);
+        condicion->eval(idents);
+    }
+}
+
+
+eval(assign){
+    val->eval(idents);
+    idents[id] = val->value;
+}
+
+
+eval(plus){
+    expr1->eval(idents);
+    expr2->eval(idents);
+    value = expr1->value + expr2->value;
+}
+
+eval(minus){
+    expr1->eval(idents);
+    expr2->eval(idents);
+    value = expr1->value - expr2->value;
+}
+
+eval(multiply){
+    expr1->eval(idents);
+    expr2->eval(idents);
+    value = expr1->value * expr2->value;
+}
+
+eval(divide){
+    expr1->eval(idents);
+    expr2->eval(idents);
+    value = expr1->value / expr2->value;
+}
+
+eval(andExpr){
+    expr1->eval(idents);
+    expr2->eval(idents);
+    value = expr1->value && expr2->value;
+}
+
+eval(orExpr){
+    expr1->eval(idents);
+    expr2->eval(idents);
+    value = expr1->value || expr2->value;
+}
+
+eval(notExpr){
+    expr->eval(idents);
+    value = !expr->value
+}
+
+eval(id){
+    value = idents[id_val];
+}
+
+eval(intnum){
+    value = num;
+}
+
